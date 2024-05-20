@@ -1,53 +1,41 @@
-import { useState } from "react"
-import Header from "./Header.tsx"
-import headerImage from './assets/goals.jpg'
+import { useState } from 'react';
 
-import AddGoalForm from "./AddGoalForm.tsx"
-import GoalCard from "./GoalCard.tsx"
+import CourseGoalList from './components/CourseGoalList.tsx';
+import Header from './components/Header.tsx';
+import NewGoal from './components/NewGoal.tsx';
+import goalsImg from './assets/goals.jpg';
 
-export type courseGoals = {
-  title:string,
-  description: string,
-  id: number
-}
+export type CourseGoal = {
+  title: string;
+  description: string;
+  id: number;
+};
 
+export default function App() {
+  const [goals, setGoals] = useState<CourseGoal[]>([]);
 
-function App() {
-
-  const [goals, setGoals]  = useState<courseGoals[]>([]) 
- 
-  const handleAddGoals = (title:string , description:string) =>{
-  
-    if(title && description){
-    console.log(title,description)
-
-    }
-      setGoals([...goals, {title,description,id:Math.random()} ])
+  function handleAddGoal(goal: string, summary: string) {
+    setGoals((prevGoals) => {
+      const newGoal: CourseGoal = {
+        id: Math.random(),
+        title: goal,
+        description: summary,
+      };
+      return [...prevGoals, newGoal];
+    });
   }
-  
-  const onDelete = (id:number) =>{
-   setGoals(goals.filter((goal)=>{
-     if(goal.id !== id){
-      
-      return [...goals]
-     }
-    }))
+
+  function handleDeleteGoal(id: number) {
+    setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== id));
   }
 
   return (
-    <>
-      <div style={{display:'flex' , flexDirection:'column' , justifyContent:"center"}}>
-        <Header image = {{src: headerImage , alt :'Image'}} >
-          <h1> Your Course Gaols</h1>
-          </Header>
-        
-          <AddGoalForm onAddGoals = {handleAddGoals}/>
-         {goals.map((goal)=>{
-          return <GoalCard key={goal.id} title={goal.title} description={goal.description} id={goal.id} onDelete={onDelete}/>
-         })}
-      </div>
-    </>
-  )
+    <main>
+      <Header image={{ src: goalsImg, alt: 'A list of goals' }}>
+        <h1>Your Course Goals</h1>
+      </Header>
+      <NewGoal onAddGoal={handleAddGoal} />
+      <CourseGoalList goals={goals} onDeleteGoal={handleDeleteGoal} />
+    </main>
+  );
 }
-
-export default App
